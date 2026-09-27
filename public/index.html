@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyber-dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Operator's Booth — Meera's Railway Delay API</title>
+
+  <!-- Google Fonts: Barlow Condensed, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- TOP NAV PILL BAR -->
+  <header class="top-nav-bar">
+    <div class="nav-pill-capsule">
+      <div class="nav-logo">
+        <span class="logo-badge">⚡</span>
+        <span class="logo-title">THE OPERATOR'S BOOTH</span>
+      </div>
+      <div class="nav-links">
+        <span class="mint-pill" id="healthPill">
+          <span class="status-dot">●</span>
+          <span id="healthText">HEALTH: OK (200)</span>
+        </span>
+        <span class="nav-meta">BASE SEPOLIA <code>84532</code></span>
+        <span class="nav-meta">x402 v2.27</span>
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" title="Switch Theme">
+          <span id="themeIcon">🌌</span>
+          <span id="themeName">Cyber Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CANVAS CONTAINER -->
+  <div class="canvas-container">
+
+    <!-- HERO SECTION -->
+    <section class="hero-split">
+      <div class="hero-left">
+        <div class="mint-pill">PUNE RAILWAY TELEMETRY • DETERMINISTIC PARSER</div>
+        <h1 class="display-title-xl">MEERA'S RAILWAY DELAY API.</h1>
+        <p class="hero-body">
+          Meera converts messy delay notices from Pune and Indian Railway stations into validated JSON.
+          Commuter apps pay fractions of a cent using <strong>x402 micropayments on Base Sepolia</strong>.
+        </p>
+        <div class="voltage-banner">
+          <span class="voltage-dot">⚡</span>
+          <span><strong>ZERO-COST FAILURE GUARANTEE:</strong> Malformed notices return HTTP 4xx and automatically cancel
+            x402 settlement. Caller keeps their coin!</span>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="inverted-card hero-pricing">
+          <span class="mono-label">SERVER PRICING TIERS</span>
+          <h3 class="card-display-head">PAY-PER-CALL</h3>
+
+          <div class="pricing-rows">
+            <div class="price-row">
+              <span class="row-label">POST /parse (Single Notice)</span>
+              <span class="row-val">$0.001 <small>USDC</small></span>
+            </div>
+            <div class="price-row highlight">
+              <span class="row-label">POST /parse/bulk (Bulk Notices)</span>
+              <span class="row-val">$0.005 <small>USDC</small></span>
+            </div>
+          </div>
+          <div class="card-footer-meta">Server-Controlled Prices • Non-Overridable by Client</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION SWITCHER PILL TABS -->
+    <nav class="section-tabs-bar">
+      <div class="tab-pill-container">
+        <button class="tab-pill active" data-tab="tabSingle">SINGLE NOTICE PARSER</button>
+        <button class="tab-pill" data-tab="tabBulk">BULK PARSER</button>
+        <button class="tab-pill" data-tab="tabInspector">x402 PROTOCOL INSPECTOR</button>
+        <button class="tab-pill" data-tab="tabAudit">ACCEPTANCE MATRIX</button>
+      </div>
+    </nav>
+
+    <!-- TAB 1: SINGLE NOTICE PARSER -->
+    <main class="tab-pane active" id="tabSingle">
+      <div class="two-column-grid">
+
+        <!-- INPUT WHITE CARD -->
+        <div class="white-card">
+          <div class="card-top-row">
+            <h3 class="secondary-heading">INPUT RAILWAY NOTICE</h3>
+            <span class="mono-label" id="charGauge">0 / 2000 CHARS</span>
+          </div>
+
+          <div class="preset-group">
+            <span class="mono-label">LOAD PRESET SAMPLE:</span>
+            <div class="preset-pills">
+              <button class="mint-pill-btn" onclick="loadSample('english1')">ENGLISH 1 (RAIN)</button>
+              <button class="mint-pill-btn" onclick="loadSample('english2')">ENGLISH 2 (NO REASON)</button>
+              <button class="mint-pill-btn" onclick="loadSample('hindi')">HINDI NOTICE</button>
+              <button class="mint-pill-btn" onclick="loadSample('marathi')">MARATHI NOTICE</button>
+              <button class="mint-pill-btn danger" onclick="loadSample('garbage')">MALFORMED NOTICE</button>
+            </div>
+          </div>
+
+          <div class="input-block">
+            <textarea id="singleInput" rows="6" placeholder="Paste station delay notice text here..."></textarea>
+          </div>
+
+          <div class="cta-button-row">
+            <button class="btn-dark-primary" onclick="executePaidSingleParse()">
+              EXECUTE x402 PAID CALL ($0.001 USDC)
+            </button>
+            <button class="btn-ghost-secondary" onclick="executeSingleParse()">
+              UNPAID REQUEST (HTTP 402)
+            </button>
+          </div>
+        </div>
+
+        <!-- OUTPUT VIEWPORT CARD -->
+        <div class="white-card">
+          <div class="card-top-row">
+            <h3 class="secondary-heading">PARSED TELEMETRY & RESULT</h3>
+            <span class="mint-pill" id="singleBadge">AWAITING REQUEST</span>
+          </div>
+
+          <div class="output-viewport-box" id="singleOutputViewport">
+            <div class="flat-empty-state">
+              <div class="empty-num">01</div>
+              <h4 class="empty-head">NO REQUEST EXECUTED YET</h4>
+              <p class="body-sm">Select a notice preset on the left and click <strong>EXECUTE x402 PAID CALL</strong> to test the live payment flow.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- TAB 2: BULK PARSER -->
+    <main class="tab-pane" id="tabBulk">
+      <div class="two-column-grid">
+        <div class="white-card">
+          <div class="card-top-row">
+            <h3 class="secondary-heading">BULK NOTICES (ONE PER LINE)</h3>
+            <span class="mono-label">MAXIMUM 50 NOTICES</span>
+          </div>
+
+          <div class="preset-group">
+            <span class="mono-label">LOAD BULK PRESETS:</span>
+            <div class="preset-pills">
+              <button class="mint-pill-btn" onclick="loadBulkSample('valid')">2 VALID NOTICES</button>
+              <button class="mint-pill-btn danger" onclick="loadBulkSample('mixed')">VALID + MALFORMED</button>
+            </div>
+          </div>
+
+          <div class="input-block">
+            <textarea id="bulkInput" rows="9" placeholder="Enter multiple delay notices (one per line)..."></textarea>
+          </div>
+
+          <div class="cta-button-row">
+            <button class="btn-dark-primary" onclick="executePaidBulkParse()">
+              EXECUTE BULK x402 PAID CALL ($0.005 USDC)
+            </button>
+            <button class="btn-ghost-secondary" onclick="executeBulkParse()">
+              UNPAID BULK REQUEST (402)
+            </button>
+          </div>
+        </div>
+
+        <div class="white-card">
+          <div class="card-top-row">
+            <h3 class="secondary-heading">BULK PARSED RESULTS</h3>
+            <span class="mint-pill" id="bulkBadge">AWAITING REQUEST</span>
+          </div>
+
+          <div class="output-viewport-box" id="bulkOutputViewport">
+            <div class="flat-empty-state">
+              <div class="empty-num">02</div>
+              <h4 class="empty-head">NO BULK REQUEST EXECUTED</h4>
+              <p class="body-sm">Click <strong>EXECUTE BULK x402 PAID CALL</strong> to process multiple notices.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 3: x402 LIFECYCLE INSPECTOR -->
+    <main class="tab-pane" id="tabInspector">
+      <div class="inverted-card full-width-card">
+        <div class="card-top-row">
+          <div>
+            <span class="mint-pill">x402 PROTOCOL SPECIFICATION</span>
+            <h2 class="display-title-lg" style="margin-top: 12px;">ZERO-COST FAILURE SETTLEMENT PROTOCOL</h2>
+          </div>
+        </div>
+
+        <p class="body-text-inverted">
+          How Meera's API strictly guarantees that callers are <strong>never charged for unparseable notices</strong>:
+        </p>
+
+        <div class="flow-step-grid">
+          <div class="flow-step-card">
+            <span class="mono-label">STEP 01</span>
+            <h4>CLIENT REQUEST</h4>
+            <p>Caller sends <code>POST /parse</code> with delay notice body.</p>
+          </div>
+          <div class="flow-step-card">
+            <span class="mono-label">STEP 02</span>
+            <h4>402 INTERCEPT</h4>
+            <p>Server gate intercepts call and returns <code>HTTP 402</code> with <code>payment-required</code> header.</p>
+          </div>
+          <div class="flow-step-card">
+            <span class="mono-label">STEP 03</span>
+            <h4>EIP-712 SIGN</h4>
+            <p>Buyer generates EIP-712 / Permit2 signature with <code>BUYER_PRIVATE_KEY</code> on Base Sepolia.</p>
+          </div>
+          <div class="flow-step-card">
+            <span class="mono-label">STEP 04</span>
+            <h4>NOTICE PARSE</h4>
+            <p>Server verifies signature and runs <code>src/parser.ts</code> + Zod Output Schema.</p>
+          </div>
+          <div class="flow-step-card highlight">
+            <span class="mono-label">STEP 05</span>
+            <h4>SETTLEMENT BRANCH</h4>
+            <div class="branch-pill green">VALID NOTICE (200 OK) -> x402 Settle Charge</div>
+            <div class="branch-pill red">MALFORMED (4xx) -> x402 Cancel Settlement (0 Charge!)</div>
+          </div>
+        </div>
+
+        <div class="config-mist-card">
+          <span class="mono-label">SERVER PARAMETERS & SAFETY CONFIGURATION</span>
+          <div class="config-two-col">
+            <div><span class="mono-label">NETWORK ID:</span> <code id="cfgNetwork">eip155:84532</code></div>
+            <div><span class="mono-label">RECIPIENT (PAY_TO):</span> <code id="cfgPayTo">0x...</code></div>
+            <div><span class="mono-label">PARSE PRICE:</span> <code id="cfgSinglePrice">$0.001 USDC</code></div>
+            <div><span class="mono-label">BULK PRICE:</span> <code id="cfgBulkPrice">$0.005 USDC</code></div>
+            <div><span class="mono-label">FACILITATOR:</span> <code id="cfgFacilitator">https://x402.org/facilitator</code></div>
+            <div><span class="mono-label">BUYER KEY:</span> <code id="cfgBuyerKey">Configured</code></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 4: ACCEPTANCE MATRIX -->
+    <main class="tab-pane" id="tabAudit">
+      <div class="white-card full-width-card">
+        <div class="card-top-row">
+          <div>
+            <span class="mint-pill">ACCEPTANCE AUDIT</span>
+            <h2 class="display-title-lg" style="margin-top: 12px;">REPOSITORY ACCEPTANCE MATRIX</h2>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="brutalist-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>ACCEPTANCE CRITERION</th>
+                <th>IMPLEMENTATION FILE(S)</th>
+                <th>OUTCOME</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>01</td>
+                <td>x402 Protected Routes</td>
+                <td><code>src/server.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>02</td>
+                <td>Base Sepolia Network (<code>eip155:84532</code>)</td>
+                <td><code>src/config.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>03</td>
+                <td>Real x402 Buyer Client</td>
+                <td><code>buyer/buy.ts</code>, <code>buyer/buy-bulk.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>04</td>
+                <td>No Credentials Tracked</td>
+                <td><code>.gitignore</code>, <code>.env.example</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>05</td>
+                <td>Server-Controlled Price</td>
+                <td><code>src/config.ts</code>, <code>src/server.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>06</td>
+                <td>Server-Controlled Recipient (<code>payTo</code>)</td>
+                <td><code>src/config.ts</code>, <code>src/server.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>07</td>
+                <td>Unparseable Notice -> 4xx & 0 Charge</td>
+                <td><code>src/server.ts</code>, <code>src/parser.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>08</td>
+                <td>Input Size Caps (10kb / 2000 chars)</td>
+                <td><code>src/server.ts</code>, <code>src/schemas.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>09</td>
+                <td>Zod Output Schema Validation</td>
+                <td><code>src/schemas.ts</code>, <code>src/server.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Malformed Automated Test Suite</td>
+                <td><code>tests/parser.test.ts</code>, <code>tests/api.test.ts</code></td>
+                <td><span class="mint-pill">PASS</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER BANNER -->
+    <footer class="footer-brutalist">
+      <div class="footer-text">THE OPERATOR'S BOOTH • MEERA'S RAILWAY DELAY API</div>
+      <div class="footer-sub">Road to Devcon VI • x402 Pay-Per-Call Protocol • Base Sepolia Testnet</div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
